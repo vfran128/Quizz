@@ -1,0 +1,24 @@
+Cual es el color del cielo?
+Azul
+Rojo
+amarillo
+Verde
+1
+Que ruido hace un gato?
+Meow
+Rawr
+Prrr
+No se inunda mas
+4
+2+2 = x?
+x = 4
+x = 3
+x == 4
+x == 2
+3
+Cuales son los nombres de los fantasmas de pacaman?
+Inky, pinky, blinky y clyde
+Inky, tinty, plinky y clyde
+Tinky, pinky, clinky y clyde
+INky, pinky, blinky y juan
+1
