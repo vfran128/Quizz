@@ -4,10 +4,9 @@
 #include <time.h>
 
 
-
-
-
-
+// COSAS PENDIENTES:
+// *UN BOTON QUE LE PERMITA AL USUARIO ELEGIR LA CANTIDAD DE PREGUNTAS CON LAS QUE QUIERE JUGAR
+// *UN MENU
 
 struct pregunta{
    char preg[100]; //pregunta
@@ -197,7 +196,7 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
       }
       pz[pieza_actual].x_cord++;
       pz[pieza_actual].y_cord--;
-      
+
     } else{
 
       for (int i = 0; i < numPiezas; i++) {
@@ -344,7 +343,8 @@ void printarray(struct piezas *pz, int array_size, char array[array_size][array_
   printf("\n");
 }
 
-
+  	
+  	
 void juego(struct piezas *pz, int numPiezas, int array_size, char array[array_size][array_size],struct pregunta *preguntas) {
   while (1) {
     printarray(pz, array_size, array,numPiezas);
@@ -364,10 +364,30 @@ void juego(struct piezas *pz, int numPiezas, int array_size, char array[array_si
   }
 }
 
+void game(struct piezas *pz, int numPiezas, int array_size, char array[array_size][array_size],struct pregunta *preguntas) {
+	
+	int game;
+ 
+  printf("Bienvenido a las damas nashe!\n");
+  printf("1- Jugar\n");
+  printf("2- Salir\n");
+  scanf("%d", &game);
+
+switch(game) {
+  case 1:
+  	juego(pz, numPiezas, array_size, array, preguntas);
+  	break;
+  	
+  case 2:
+  	return;
+  	break;
+  }
+}
 
 
 
 int main(void) {
+  
   srand(time(NULL));
   int numPreguntas = 4;
   int array_size = 10;
@@ -377,7 +397,8 @@ int main(void) {
   struct piezas *pz = malloc(numPiezas * sizeof(struct piezas));
   asignarDesdeArchivo(preguntas, numPreguntas,"test.txt" );
   asignarDesdeArchivoPiezas(pz,numPiezas,"pieza.txt");
-  juego(pz, numPiezas, array_size, array, preguntas);
+  //juego(pz, numPiezas, array_size, array, preguntas);
+  game(pz, numPiezas, array_size, array, preguntas);
   // juego(pz, numPiezas, array_size, array);
   //     printarray(pz, array_size, array);
   // piece_move(1, pz, array_size, numPiezas);
