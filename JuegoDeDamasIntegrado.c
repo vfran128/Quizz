@@ -3,11 +3,6 @@
 #include <strings.h>
 #include <time.h>
 
-
-// COSAS PENDIENTES:
-// *UN BOTON QUE LE PERMITA AL USUARIO ELEGIR LA CANTIDAD DE PREGUNTAS CON LAS QUE QUIERE JUGAR
-// *UN MENU
-
 struct pregunta{
    char preg[100]; //pregunta
    char rep1[50]; //respuestas posibles
@@ -37,11 +32,11 @@ void asignarDesdeArchivo(struct pregunta *preguntas, int numPreguntas, const cha
     while (fgets(linea, sizeof(linea), archivo)) {
         char inttemp[10];
         if (indice >= numPreguntas) { //revisa si tomo el numero maximo de preguntas solicitadas por el usuario
-            printf("Se alcanzó el número máximo de preguntas.\n");
+            printf("Se alcanzÃ³ el nÃºmero mÃ¡ximo de preguntas.\n");
             break;
         }
 
-        linea[strcspn(linea, "\n")] = '\0'; // Eliminar el salto de línea
+        linea[strcspn(linea, "\n")] = '\0'; // Eliminar el salto de lÃ­nea
 
         // Asignar la pregunta y las respuestas a la estructura
         strcpy(preguntas[indice].preg, linea);
@@ -119,7 +114,7 @@ void asignarDesdeArchivoPiezas(struct piezas *piezas, int numPiezas, const char 
     while (fgets(linea, sizeof(linea), archivo)) {
         char inttemp[10];
         if (indice >= numPiezas) {
-            printf("Se alcanzó el número máximo de piezas.\n");
+            printf("Se alcanzÃ³ el nÃºmero mÃ¡ximo de piezas.\n");
             break;
         }
 
