@@ -75,17 +75,19 @@ int Cuestionario(struct pregunta *preguntas, int numPreguntas) {
   int random = rand() % numPreguntas; // genera un rando, del 0-numPreguntas
   printf("----- Cuestionario -----\n");
   printf("Random %d:\n", random );
-  int temp;
+  char temp[10];
   printf("Pregunta %d:\n", random + 1);
   mostrar(preguntas[random]);
   printf("Su respuesta es?\n");
-  scanf("%d",&temp );
-  if(temp == preguntas[random].correctRep) {
-    printf("BIEN!\n");
+  scanf("%s",&temp );
+  if(atoi(temp) == preguntas[random].correctRep) {
+    strcpy(mensaje_advertencia, "  Respuesta correcta.");
     return 0;
 }//compara la respuesta del usuario con el numero de la respuesta correcta
-  else {printf("MAL!\n");
-  return 1;}
+  else {
+    strcpy(mensaje_advertencia, "  Respuesta incorrecta.");
+    return 1;
+  }
 }
 
 
@@ -112,7 +114,7 @@ void asignarDesdeArchivoPiezas(struct piezas *piezas, int numPiezas, const char 
     while (fgets(linea, sizeof(linea), archivo)) {
         char inttemp[10];
         if (indice >= numPiezas) {
-            printf("Se alcanzó el número máximo de piezas.\n");
+            printf("Se alcanzï¿½ el nï¿½mero mï¿½ximo de piezas.\n");
             break;
         }
 
