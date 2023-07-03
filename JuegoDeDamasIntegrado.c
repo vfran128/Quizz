@@ -30,16 +30,16 @@ void asignarDesdeArchivo(struct pregunta *preguntas, int numPreguntas, const cha
         return;
     }
 
-    char linea[500];
+    char linea[200];
     int indice = 0;
     while (fgets(linea, sizeof(linea), archivo)) {
         char inttemp[10];
         if (indice >= numPreguntas) { //revisa si tomo el numero maximo de preguntas solicitadas por el usuario
-            printf("Se alcanzó el número máximo de preguntas.\n");
+            printf("Se alcanzo el numero maximo de preguntas.\n");
             break;
         }
 
-        linea[strcspn(linea, "\n")] = '\0'; // Eliminar el salto de línea
+        linea[strcspn(linea, "\n")] = '\0'; // Eliminar el salto de linea
 
         // Asignar la pregunta y las respuestas a la estructura
         strcpy(preguntas[indice].preg, linea);
@@ -75,21 +75,18 @@ int Cuestionario(struct pregunta *preguntas, int numPreguntas) {
   int random = rand() % numPreguntas; // genera un rando, del 0-numPreguntas
   printf("----- Cuestionario -----\n");
   printf("Random %d:\n", random );
-  char temp[10];
+  int temp;
   printf("Pregunta %d:\n", random + 1);
   mostrar(preguntas[random]);
   printf("Su respuesta es?\n");
-  scanf("%s",&temp );
-  if(atoi(temp) == preguntas[random].correctRep) {
-    strcpy(mensaje_advertencia, "  Respuesta correcta.");
+  scanf("%d",&temp );
+  if(temp == preguntas[random].correctRep) {
+    printf("BIEN!\n");
     return 0;
 }//compara la respuesta del usuario con el numero de la respuesta correcta
-  else {
-    strcpy(mensaje_advertencia, "  Respuesta incorrecta.");
-    return 1;
-  }
+  else {printf("MAL!\n");
+  return 1;}
 }
-
 
 
 
@@ -137,7 +134,7 @@ void asignarDesdeArchivoPiezas(struct piezas *piezas, int numPiezas, const char 
 }
 
 
-void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, struct pregunta *preguntas, char mensaje_advertencia[500]) {
+void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, struct pregunta *preguntas, char mensaje_advertencia[500], int numPreguntas) {
   int x, y, choice, pieza_actual;
   label:
   printf("Ingrese las coordenadas de la pieza que quiera mover(x y): \n");
@@ -189,7 +186,7 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
 
       for (int i = 0; i < numPiezas; i++) {
         if(pz[pieza_actual].equipo != pz[i].equipo && pz[pieza_actual].x_cord + 1 == pz[i].x_cord && pz[pieza_actual].y_cord - 1 == pz[i].y_cord ) {
-          int funcion_preguntas =  Cuestionario(preguntas, 4);
+          int funcion_preguntas =  Cuestionario(preguntas, numPreguntas);
           if(funcion_preguntas == 0) {
             pz[i].estado = 2;
             pz[pieza_actual].x_cord++;
@@ -219,7 +216,7 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
 
       for (int i = 0; i < numPiezas; i++) {
         if(pz[pieza_actual].equipo != pz[i].equipo && pz[pieza_actual].x_cord + 1 == pz[i].x_cord && pz[pieza_actual].y_cord + 1 == pz[i].y_cord ) {
-          int funcion_preguntas = Cuestionario(preguntas, 4);
+          int funcion_preguntas = Cuestionario(preguntas, numPreguntas);
           if(funcion_preguntas == 0) {
             pz[i].estado = 2;
             pz[pieza_actual].x_cord++;
@@ -264,7 +261,7 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
 
       for (int i = 0; i < numPiezas; i++) {
         if(pz[pieza_actual].equipo != pz[i].equipo && pz[pieza_actual].x_cord - 1 == pz[i].x_cord && pz[pieza_actual].y_cord - 1 == pz[i].y_cord ) {
-          int funcion_preguntas = Cuestionario(preguntas, 4);
+          int funcion_preguntas = Cuestionario(preguntas, numPreguntas);
           if(funcion_preguntas == 0) {
             pz[i].estado = 2;
             pz[pieza_actual].x_cord--;
@@ -295,7 +292,7 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
 
       for (int i = 0; i < numPiezas; i++) {
         if(pz[pieza_actual].equipo != pz[i].equipo && pz[pieza_actual].x_cord - 1 == pz[i].x_cord && pz[pieza_actual].y_cord + 1 == pz[i].y_cord ) {
-          int funcion_preguntas = Cuestionario(preguntas, 4);
+          int funcion_preguntas = Cuestionario(preguntas, numPreguntas);
           if(funcion_preguntas == 0) {
             pz[i].estado = 2;
             pz[pieza_actual].x_cord--;
@@ -387,12 +384,12 @@ void printarray(struct piezas *pz, int array_size, char array[array_size][array_
 
 //funcion del juego
 
-void juego(struct piezas *pz, int numPiezas, int array_size, char array[array_size][array_size],struct pregunta *preguntas) {
+void juego(struct piezas *pz, int numPiezas, int array_size, char array[array_size][array_size],struct pregunta *preguntas, int numPreguntas) {
   //hasta que gane algun equipo, se repiten los movimientos de cada equipo
   while (1) {
     printarray(pz, array_size, array,numPiezas, mensaje_advertencia);
     printf("Mueve equipo 1:\n");
-    piece_move(1, pz, array_size, numPiezas, preguntas, mensaje_advertencia);
+    piece_move(1, pz, array_size, numPiezas, preguntas, mensaje_advertencia, numPreguntas);
     //chequea si gana el Equipo 1
     if(wincheck(pz, numPiezas, 2)) {
       printf("Gano el equipo 1.\n");
@@ -401,7 +398,7 @@ void juego(struct piezas *pz, int numPiezas, int array_size, char array[array_si
     strcpy(mensaje_advertencia, " ");
     printarray(pz, array_size, array,numPiezas, mensaje_advertencia);
     printf("Mueve equipo 2:\n");
-    piece_move(2, pz, array_size, numPiezas, preguntas, mensaje_advertencia);
+    piece_move(2, pz, array_size, numPiezas, preguntas, mensaje_advertencia, numPreguntas);
     //chequea si gana el Equipo 2
     if (wincheck(pz, numPiezas, 1)) {
       printf("Gano el equipo 1.\n");
@@ -412,43 +409,72 @@ void juego(struct piezas *pz, int numPiezas, int array_size, char array[array_si
 
 
 //funcion del menu
+void game(int *numPreguntas, char **arshivo) {
+    int game;
+    int k;
 
-void game(struct piezas *pz, int numPiezas, int array_size, char array[array_size][array_size],struct pregunta *preguntas) {
+    menu:
+    printf("Bienvenido a las damas nashe!\n");
+    printf("1- Jugar\n");
+    printf("2- Elegir con cuantas preguntas jugar\n");
+    printf("3- Salir\n");
+    scanf("%d", &game);
 
-	int game;
+    switch (game) {
+        case 1:
+            return;
+            break;
 
-  printf("Bienvenido a las damas nashe!\n");
-  printf("1- Jugar\n");
-  printf("2- Salir\n");
-  scanf("%d", &game);
+        case 2:
+            printf("1- 4 preguntas\n");
+            printf("2- 20 preguntas\n");
+            printf("3- 30 preguntas\n");
+            printf("4- Metal Gear c:\n");
+            scanf("%d", &k);
 
-switch(game) {
+            switch (k) {
+                case 1:
+                    *numPreguntas = 4;
+                    break;
+                case 2:
+                    *numPreguntas = 20;
+                    break;
+                case 3:
+                    *numPreguntas = 30;
+                    break;
+                case 4:
+                    *arshivo = "metalgear.txt";
+                    *numPreguntas = 1;
+                    break;
+            }
 
-  case 1:
-  	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-  	juego(pz, numPiezas, array_size, array, preguntas);
-  	break;
+            system("cls");
+            goto menu;
+            break;
 
-  case 2:
-  	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-  	return;
-  	break;
-  }
+        case 3:
+            return;
+            break;
+    }
 }
 
 
-
 int main(void) {
+
   srand(time(NULL));
-  int numPreguntas = 4;
+  char *arshivo = "preguntas.txt";
+  int numPreguntas;
   int array_size = 10;
   char array[array_size][array_size];
   int numPiezas = 40;
-  struct pregunta *preguntas = malloc(4 * sizeof(struct pregunta));
+  game(&numPreguntas, &arshivo);
+  struct pregunta *preguntas = malloc(numPreguntas * sizeof(struct pregunta));
   struct piezas *pz = malloc(numPiezas * sizeof(struct piezas));
-  asignarDesdeArchivo(preguntas, numPreguntas,"test.txt" );
+  asignarDesdeArchivo(preguntas, numPreguntas,arshivo );
   asignarDesdeArchivoPiezas(pz,numPiezas,"pieza.txt");
-  game(pz, numPiezas, array_size, array, preguntas);
+  juego(pz, numPiezas, array_size, array, preguntas, numPreguntas);
+
+  return 0;
 
   	return 0;
 }
