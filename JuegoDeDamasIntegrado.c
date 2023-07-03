@@ -37,11 +37,11 @@ void asignarDesdeArchivo(struct pregunta *preguntas, int numPreguntas, const cha
     while (fgets(linea, sizeof(linea), archivo)) {
         char inttemp[10];
         if (indice >= numPreguntas) { //revisa si tomo el numero maximo de preguntas solicitadas por el usuario
-            printf("Se alcanzÃ³ el nÃºmero mÃ¡ximo de preguntas.\n");
+            printf("Se alcanzó el número máximo de preguntas.\n");
             break;
         }
 
-        linea[strcspn(linea, "\n")] = '\0'; // Eliminar el salto de lÃ­nea
+        linea[strcspn(linea, "\n")] = '\0'; // Eliminar el salto de línea
 
         // Asignar la pregunta y las respuestas a la estructura
         strcpy(preguntas[indice].preg, linea);
@@ -119,7 +119,7 @@ void asignarDesdeArchivoPiezas(struct piezas *piezas, int numPiezas, const char 
     while (fgets(linea, sizeof(linea), archivo)) {
         char inttemp[10];
         if (indice >= numPiezas) {
-            printf("Se alcanzÃ³ el nÃºmero mÃ¡ximo de piezas.\n");
+            printf("Se alcanzó el número máximo de piezas.\n");
             break;
         }
 
@@ -367,10 +367,12 @@ void juego(struct piezas *pz, int numPiezas, int array_size, char array[array_si
 void game(struct piezas *pz, int numPiezas, int array_size, char array[array_size][array_size],struct pregunta *preguntas) {
 	
 	int game;
+	int k;
  
   printf("Bienvenido a las damas nashe!\n");
   printf("1- Jugar\n");
-  printf("2- Salir\n");
+  printf("2- Elegir con cuantas preguntas jugar\n");
+  printf("3- Salir\n");
   scanf("%d", &game);
 
 switch(game) {
@@ -379,6 +381,16 @@ switch(game) {
   	break;
   	
   case 2:
+  	
+  	printf("1- 10 preguntas\n");
+  	printf("2- 20 preguntas\n");
+  	printf("3- 30 preguntas\n");
+  	printf("4- Metal Gear c:\n");
+  	scanf("%d", &k);
+  	
+  	break;
+  	
+  case 3:
   	return;
   	break;
   }
