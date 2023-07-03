@@ -3,6 +3,11 @@
 #include <strings.h>
 #include <time.h>
 
+char mensaje_advertencia[500] = "-";
+
+// COSAS PENDIENTES:
+// *UN BOTON QUE LE PERMITA AL USUARIO ELEGIR LA CANTIDAD DE PREGUNTAS CON LAS QUE QUIERE JUGAR
+
 struct pregunta{
    char preg[100]; //pregunta
    char rep1[50]; //respuestas posibles
@@ -27,7 +32,7 @@ void asignarDesdeArchivo(struct pregunta *preguntas, int numPreguntas, const cha
         return;
     }
 
-    char linea[200];
+    char linea[500];
     int indice = 0;
     while (fgets(linea, sizeof(linea), archivo)) {
         char inttemp[10];
@@ -78,11 +83,13 @@ int Cuestionario(struct pregunta *preguntas, int numPreguntas) {
   printf("Su respuesta es?\n");
   scanf("%s",&temp );
   if(atoi(temp) == preguntas[random].correctRep) {
-    printf("BIEN!\n");
+    strcpy(mensaje_advertencia, "  Respuesta correcta.");
     return 0;
 }//compara la respuesta del usuario con el numero de la respuesta correcta
-  else {printf("MAL!\n");
-  return 1;}
+  else {
+    strcpy(mensaje_advertencia, "  Respuesta incorrecta.");
+    return 1;
+  }
 }
 
 
@@ -97,10 +104,6 @@ struct piezas {
    int y_cord;
 };
 
-// int funcionfran(){
-//   printf("Funca\n");
-//   return 0;
-// }
 
 void asignarDesdeArchivoPiezas(struct piezas *piezas, int numPiezas, const char *nombreArchivo) {
     FILE *archivo = fopen(nombreArchivo, "r");
@@ -109,7 +112,7 @@ void asignarDesdeArchivoPiezas(struct piezas *piezas, int numPiezas, const char 
         return;
     }
 
-    char linea[200];
+    char linea[500];
     int indice = 0;
     while (fgets(linea, sizeof(linea), archivo)) {
         char inttemp[10];
@@ -136,18 +139,20 @@ void asignarDesdeArchivoPiezas(struct piezas *piezas, int numPiezas, const char 
 }
 
 
-void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, struct pregunta *preguntas ) {
+void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, struct pregunta *preguntas, char mensaje_advertencia[500]) {
   int x, y, choice, pieza_actual;
   label:
-  printf("pone las coords de la pieza q quieras mover\n");
+  printf("Ingrese las coordenadas de la pieza que quiera mover(x y): \n");
   scanf("%d %d", &x, &y);
 
   //detecta que pieza eligio el usuario
   for (int i = 0; i < numPiezas; i++) {
     if(pz[i].x_cord == x && pz[i].y_cord == y && equip == pz[i].equipo) pieza_actual = i;
   }
-  if(pz[pieza_actual].x_cord != x || pz[pieza_actual].y_cord != y) {
-    printf("The west has fallen.\n");
+  if(pz[pieza_actual].x_cord != x || pz[pieza_actual].y_cord != y || pz[pieza_actual].equipo != equip) {
+    printf("\n");
+    strcpy(mensaje_advertencia, "  La pieza que intenta elegir no existe o no pertenece al equipo que tiene que mover ahora.");
+    printf("\n");
     return;
   }
   secondlabel:
@@ -161,31 +166,38 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
 
     case 1:
     if(pz[pieza_actual].x_cord + 1 > numPiezas) {
-      printf("No se puede mover.\n");
-      printf("Tal vez estes intentando mover una pieza a un lugar que ya ocupa otra pieza del mismo equipo.\n");
-      printf("Elija de vuelta.\n");
+      printf("\n");
+        printf("No se puede mover.\n");
+        printf("Tal vez estes intentando mover una pieza a un lugar que ya ocupa otra pieza del mismo equipo.\n");
+        printf("\n");
+        printf("Elija de vuelta.\n");
       goto secondlabel;
     }
 
     if(equip == 1) {
 
       for (int i = 0; i < numPiezas; i++) {
-        if (pz[pieza_actual].y_cord - 1 < 0 || pz[pieza_actual].equipo == pz[i].equipo && pz[pieza_actual].x_cord + 1 == pz[i].x_cord && pz[pieza_actual].y_cord - 1 == pz[i].y_cord) {
+        if (pz[pieza_actual].y_cord - 1 < 0 || pz[pieza_actual].equipo == pz[i].equipo && pz[pieza_actual].x_cord + 1 == pz[i].x_cord && pz[pieza_actual].y_cord - 1 == pz[i].y_cord && pz[i].estado == 1) {
+          printf("\n");
           printf("No se puede mover.\n");
           printf("Tal vez estes intentando mover una pieza a un lugar que ya ocupa otra pieza del mismo equipo.\n");
           printf("Elija de vuelta.\n");
+          printf("\n");
           goto secondlabel;
         }
       }
 
       for (int i = 0; i < numPiezas; i++) {
         if(pz[pieza_actual].equipo != pz[i].equipo && pz[pieza_actual].x_cord + 1 == pz[i].x_cord && pz[pieza_actual].y_cord - 1 == pz[i].y_cord ) {
-          int funcionfrani =  Cuestionario(preguntas, 4);
-          if(funcionfrani == 0) {
+          int funcion_preguntas =  Cuestionario(preguntas, 4);
+          if(funcion_preguntas == 0) {
             pz[i].estado = 2;
             pz[pieza_actual].x_cord++;
             pz[pieza_actual].y_cord--;
             return;
+          }
+          else if(funcion_preguntas == 1){
+            pz[pieza_actual].estado = 2;
           }
         }
       }
@@ -195,22 +207,27 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
     } else{
 
       for (int i = 0; i < numPiezas; i++) {
-        if(pz[pieza_actual].y_cord +   1 > numPiezas || pz[pieza_actual].equipo == pz[i].equipo && pz[pieza_actual].x_cord + 1 == pz[i].x_cord && pz[pieza_actual].y_cord + 1 == pz[i].y_cord) {
+        if(pz[pieza_actual].y_cord +   1 > numPiezas || pz[pieza_actual].equipo == pz[i].equipo && pz[pieza_actual].x_cord + 1 == pz[i].x_cord && pz[pieza_actual].y_cord + 1 == pz[i].y_cord && pz[i].estado == 1) {
+          printf("\n");
           printf("No se puede mover.\n");
           printf("Tal vez estes intentando mover una pieza a un lugar que ya ocupa otra pieza del mismo equipo.\n");
           printf("Elija de vuelta.\n");
+          printf("\n");
           goto secondlabel;
         }
       }
 
       for (int i = 0; i < numPiezas; i++) {
         if(pz[pieza_actual].equipo != pz[i].equipo && pz[pieza_actual].x_cord + 1 == pz[i].x_cord && pz[pieza_actual].y_cord + 1 == pz[i].y_cord ) {
-          int funcionfrani = Cuestionario(preguntas, 4);
-          if(funcionfrani == 0) {
+          int funcion_preguntas = Cuestionario(preguntas, 4);
+          if(funcion_preguntas == 0) {
             pz[i].estado = 2;
             pz[pieza_actual].x_cord++;
             pz[pieza_actual].y_cord++;
             return;
+          }
+          else if(funcion_preguntas == 1){
+            pz[pieza_actual].estado = 2;
           }
         }
       }
@@ -223,18 +240,22 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
     case 2:
 
     if((pz[pieza_actual].x_cord - 1) < 0) {
+      printf("\n");
       printf("No se puede mover.\n");
       printf("Tal vez estes intentando mover una pieza a un lugar que ya ocupa otra pieza del mismo equipo.\n");
       printf("Elija de vuelta.\n");
+      printf("\n");
       goto secondlabel;
     }
 
     if (equip == 1) {
 
       for (int i = 0; i < numPiezas; i++) {
-        if(pz[pieza_actual].y_cord - 1 < 0 || equip == pz[i].equipo && pz[pieza_actual].x_cord - 1 == pz[i].x_cord && pz[pieza_actual].y_cord - 1 == pz[i].y_cord ) {
+        if(pz[pieza_actual].y_cord - 1 < 0 || equip == pz[i].equipo && pz[pieza_actual].x_cord - 1 == pz[i].x_cord && pz[pieza_actual].y_cord - 1 == pz[i].y_cord && pz[i].estado == 1) {
+          printf("\n");
           printf("No se puede mover.\n");
           printf("Tal vez estes intentando mover una pieza a un lugar que ya ocupa otra pieza del mismo equipo.\n");
+          printf("\n");
           printf("Elija de vuelta.\n");
           goto secondlabel;
         }
@@ -243,12 +264,15 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
 
       for (int i = 0; i < numPiezas; i++) {
         if(pz[pieza_actual].equipo != pz[i].equipo && pz[pieza_actual].x_cord - 1 == pz[i].x_cord && pz[pieza_actual].y_cord - 1 == pz[i].y_cord ) {
-          int funcionfrani = Cuestionario(preguntas, 4);
-          if(funcionfrani == 0) {
+          int funcion_preguntas = Cuestionario(preguntas, 4);
+          if(funcion_preguntas == 0) {
             pz[i].estado = 2;
             pz[pieza_actual].x_cord--;
             pz[pieza_actual].y_cord--;
             return;
+          }
+          else if(funcion_preguntas == 1){
+            pz[pieza_actual].estado = 2;
           }
         }
       }
@@ -259,22 +283,27 @@ void piece_move(int equip, struct piezas *pz, int array_size, int numPiezas, str
     } else {
 
       for (int i = 0; i < numPiezas; i++) {
-        if (pz[pieza_actual].y_cord + 1 > numPiezas ||  pz[pieza_actual].equipo == pz[i].equipo && pz[pieza_actual].x_cord - 1 == pz[i].x_cord && pz[pieza_actual].y_cord + 1 == pz[i].y_cord ) {
+        if (pz[pieza_actual].y_cord + 1 > numPiezas ||  pz[pieza_actual].equipo == pz[i].equipo && pz[pieza_actual].x_cord - 1 == pz[i].x_cord && pz[pieza_actual].y_cord + 1 == pz[i].y_cord && pz[i].estado == 1) {
+          printf("\n");
           printf("No se puede mover.\n");
           printf("Tal vez estes intentando mover una pieza a un lugar que ya ocupa otra pieza del mismo equipo.\n");
           printf("Elija de vuelta.\n");
+          printf("\n");
           goto secondlabel;
         }
       }
 
       for (int i = 0; i < numPiezas; i++) {
         if(pz[pieza_actual].equipo != pz[i].equipo && pz[pieza_actual].x_cord - 1 == pz[i].x_cord && pz[pieza_actual].y_cord + 1 == pz[i].y_cord ) {
-          int funcionfrani = Cuestionario(preguntas, 4);
-          if(funcionfrani == 0) {
+          int funcion_preguntas = Cuestionario(preguntas, 4);
+          if(funcion_preguntas == 0) {
             pz[i].estado = 2;
             pz[pieza_actual].x_cord--;
             pz[pieza_actual].y_cord++;
             return;
+          }
+          else if(funcion_preguntas == 1){
+            pz[pieza_actual].estado = 2;
           }
         }
       }
@@ -307,9 +336,22 @@ int wincheck(struct piezas *pz, int numPiezas, int equip) {
 
 
 
-void printarray(struct piezas *pz, int array_size, char array[array_size][array_size], int numPiezas) {
+void printarray(struct piezas *pz, int array_size, char array[array_size][array_size], int numPiezas, char mensaje_advertencia[500]) {
   int i, j;
-
+  system("cls");
+  printf("Equipo 1: X\nEquipo 2: O\n");
+  printf("\n");
+  printf("\n");
+  printf("Mensaje de advertencia: \n");
+  for (int i = 0; i < 500; i++) {
+    printf("%c", mensaje_advertencia[i]);
+    mensaje_advertencia[i] = ' ';
+  }
+  printf("\n");
+  printf("\n");
+  printf("\n");
+  printf("   0 1 2 3 4 5 6 7 8 9 X\n");
+  printf("  --------------------\n");
   // Inicializar la matriz con '-'
   for (i = 0; i < array_size; i++) {
     for (j = 0; j < array_size; j++) {
@@ -330,28 +372,29 @@ void printarray(struct piezas *pz, int array_size, char array[array_size][array_
 
   // Imprimir la matriz
   for (i = 0; i < array_size; i++) {
+    printf("%d |",  i);
     for (j = 0; j < array_size; j++) {
       printf("%c ", array[i][j]);
     }
     printf("\n");
   }
+  printf("Y\n");
   printf("\n");
 }
 
-  	
-  	
 void juego(struct piezas *pz, int numPiezas, int array_size, char array[array_size][array_size],struct pregunta *preguntas) {
   while (1) {
-    printarray(pz, array_size, array,numPiezas);
+    printarray(pz, array_size, array,numPiezas, mensaje_advertencia);
     printf("Mueve equipo 1:\n");
-    piece_move(1, pz, array_size, numPiezas, preguntas);
+    piece_move(1, pz, array_size, numPiezas, preguntas, mensaje_advertencia);
     if(wincheck(pz, numPiezas, 2)) {
       printf("Gano el equipo 1.\n");
       break;
     }
-    printarray(pz, array_size, array,numPiezas);
+    strcpy(mensaje_advertencia, " ");
+    printarray(pz, array_size, array,numPiezas, mensaje_advertencia);
     printf("Mueve equipo 2:\n");
-    piece_move(2, pz, array_size, numPiezas, preguntas);
+    piece_move(2, pz, array_size, numPiezas, preguntas, mensaje_advertencia);
     if (wincheck(pz, numPiezas, 1)) {
       printf("Gano el equipo 1.\n");
       break;
@@ -360,32 +403,23 @@ void juego(struct piezas *pz, int numPiezas, int array_size, char array[array_si
 }
 
 void game(struct piezas *pz, int numPiezas, int array_size, char array[array_size][array_size],struct pregunta *preguntas) {
-	
+
 	int game;
-	int k;
- 
+
   printf("Bienvenido a las damas nashe!\n");
   printf("1- Jugar\n");
-  printf("2- Elegir con cuantas preguntas jugar\n");
-  printf("3- Salir\n");
+  printf("2- Salir\n");
   scanf("%d", &game);
 
 switch(game) {
+
   case 1:
+  	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   	juego(pz, numPiezas, array_size, array, preguntas);
   	break;
-  	
+
   case 2:
-  	
-  	printf("1- 10 preguntas\n");
-  	printf("2- 20 preguntas\n");
-  	printf("3- 30 preguntas\n");
-  	printf("4- Metal Gear c:\n");
-  	scanf("%d", &k);
-  	
-  	break;
-  	
-  case 3:
+  	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   	return;
   	break;
   }
@@ -394,7 +428,6 @@ switch(game) {
 
 
 int main(void) {
-  
   srand(time(NULL));
   int numPreguntas = 4;
   int array_size = 10;
@@ -404,12 +437,8 @@ int main(void) {
   struct piezas *pz = malloc(numPiezas * sizeof(struct piezas));
   asignarDesdeArchivo(preguntas, numPreguntas,"test.txt" );
   asignarDesdeArchivoPiezas(pz,numPiezas,"pieza.txt");
-  //juego(pz, numPiezas, array_size, array, preguntas);
   game(pz, numPiezas, array_size, array, preguntas);
-  // juego(pz, numPiezas, array_size, array);
-  //     printarray(pz, array_size, array);
-  // piece_move(1, pz, array_size, numPiezas);
-  //     printarray(pz, array_size, array);
 
   	return 0;
 }
+  
